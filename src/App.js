@@ -9,6 +9,7 @@ function App() {
   const containerRef = useRef();
   const [price, setPrice] = useState(0);
   const [direction, setDirection] = useState("");
+  const [ticker, setTicker] = useState("");
   useEffect(() => {
     ws.current = new WebSocket(URL);
     const isDevice = window.matchMedia("(max-width: 580px)").matches;
@@ -19,7 +20,6 @@ function App() {
 
   useEffect(() => {
     if (ws) {
-      console.log(ws);
       ws.current.onopen = () => {
         ws.current.send(
           JSON.stringify({
@@ -43,6 +43,11 @@ function App() {
               }
               return result[5];
             });
+            if (!ticker) {
+              setTicker(result[2] + "/" + result[3]);
+            }
+
+            document.title = result[2] + "-" + result[3] + " | " + result[5];
           }
         };
       };
@@ -63,13 +68,16 @@ function App() {
   return (
     <main className="container" ref={containerRef}>
       {price && (
-        <h1
-          className={`price ${
-            direction === "up" ? "up" : direction === "down" ? "down" : ""
-          }`}
-        >
-          {"$ " + Number(price).toFixed(2)}
-        </h1>
+        <div className="block">
+          <h4 className="ticker">{ticker}</h4>
+          <h2
+            className={`price ${
+              direction === "up" ? "up" : direction === "down" ? "down" : ""
+            }`}
+          >
+            {"$ " + Number(price).toFixed(2)}
+          </h2>
+        </div>
       )}
     </main>
   );
