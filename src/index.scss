@@ -1,6 +1,6 @@
 :root {
-  --green: #37ad37;
-  --red: #c84f4f;
+  --green: #4bffb5;
+  --red: #ff4976;
 }
 
 *,
@@ -22,15 +22,22 @@ body {
   font-weight: normal;
 }
 .container {
+  position: relative;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 .block {
   padding: 1rem;
   border-radius: 0.5rem;
   background-color: #303134;
+  position: absolute;
+  z-index: 9;
+  left: 10px;
+  top: 10px;
+  border: 1px solid currentColor;
 }
 .ticker {
   font-weight: normal;

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Chart from "./components/Chart";
 
 const URL = "wss://streamer.cryptocompare.com/v2?format=streamer";
 
@@ -7,7 +8,7 @@ const URL = "wss://streamer.cryptocompare.com/v2?format=streamer";
 function App() {
   const ws = useRef();
   const containerRef = useRef();
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState();
   const [direction, setDirection] = useState("");
   const [ticker, setTicker] = useState("");
   useEffect(() => {
@@ -24,7 +25,7 @@ function App() {
         ws.current.send(
           JSON.stringify({
             action: "SubAdd",
-            subs: ["2~Coinbase~BTC~USD"],
+            subs: ["24~CCCAGG~BTC~USD~m"],
           })
         );
         // ws.send(
@@ -36,18 +37,25 @@ function App() {
         // );
         ws.current.onmessage = (e) => {
           const result = e.data.split("~");
-          if (result[0] === "2" && (result[4] === "1" || result[4] === "2")) {
+          // if (result[0] === "2" && (result[4] === "1" || result[4] === "2"))
+          if (result[0] === "24") {
             setPrice((prev) => {
               if (prev) {
-                prev < result[5] ? setDirection("up") : setDirection("down");
+                prev < result[10] ? setDirection("up") : setDirection("down");
               }
-              return result[5];
+              return {
+                time: result[4],
+                open: result[7],
+                high: result[8],
+                low: result[9],
+                close: result[10],
+              };
             });
             if (!ticker) {
               setTicker(result[2] + "/" + result[3]);
             }
 
-            document.title = result[2] + "-" + result[3] + " | " + result[5];
+            document.title = result[2] + "-" + result[3] + " | " + result[10];
           }
         };
       };
@@ -58,7 +66,7 @@ function App() {
         ws.current.send(
           JSON.stringify({
             action: "SubRemove",
-            subs: ["2~Coinbase~BTC~USD"],
+            subs: ["24~CCCAGG~BTC~USD~m"],
           })
         );
       };
@@ -67,7 +75,7 @@ function App() {
 
   return (
     <main className="container" ref={containerRef}>
-      {price && (
+      {price && price.close && (
         <div className="block">
           <h4 className="ticker">{ticker}</h4>
           <h2
@@ -75,10 +83,25 @@ function App() {
               direction === "up" ? "up" : direction === "down" ? "down" : ""
             }`}
           >
-            {"$ " + Number(price).toFixed(2)}
+            {"$ " + Number(price.close).toFixed(2)}
           </h2>
         </div>
       )}
+      <Chart
+        price={price}
+        height={
+          (containerRef &&
+            containerRef.current &&
+            containerRef.current.clientHeight) ||
+          window.innerHeight
+        }
+        width={
+          (containerRef &&
+            containerRef.current &&
+            containerRef.current.clientWidth) ||
+          window.innerWidth
+        }
+      />
     </main>
   );
 }
