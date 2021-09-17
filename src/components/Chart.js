@@ -3,12 +3,11 @@ import { createChart, CrosshairMode } from "lightweight-charts";
 
 let lineSeries;
 const API_URL =
-  "https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=100";
+  "https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=40";
 function Chart({ price, height, width }) {
   const [data, setData] = useState([]);
   const chartContainerRef = useRef();
   const chart = useRef();
-  useEffect(() => {}, []);
   useEffect(() => {
     fetch(API_URL)
       .then((resp) => resp.json())
@@ -57,17 +56,19 @@ function Chart({ price, height, width }) {
   }, [data]);
   useEffect(() => {
     if (lineSeries && price) {
-      const { time, open, high, low, close } = price;
-      const time_ = new Date(Number(time) * 1000)
+      // const { time, open, high, low, close } = price;
+      const { time, close } = price;
+      const last = data[data.length - 1];
+      const time_ = new Date(Number(time))
         .toLocaleDateString()
         .split("/")
         .reverse()
         .join("-");
       lineSeries.update({
         time: time_,
-        open,
-        high,
-        low,
+        open: last.open,
+        high: Math.max(last.high, close),
+        low: Math.min(last.low, close),
         close,
       });
     }

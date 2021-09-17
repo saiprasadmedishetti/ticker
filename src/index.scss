@@ -32,7 +32,7 @@ body {
 .block {
   padding: 1rem;
   border-radius: 0.5rem;
-  background-color: #303134;
+  background-color: #243248;
   position: absolute;
   z-index: 9;
   left: 10px;
@@ -40,15 +40,25 @@ body {
   border: 1px solid currentColor;
 }
 .ticker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-weight: normal;
   margin-bottom: 0.5rem;
 }
 .price {
   font-weight: 700;
 }
+
+.badge {
+  padding: 0.25rem;
+  font-weight: 700;
+  border-radius: 1rem;
+  background: #ffffff20;
+}
 .up {
-  color: var(--green);
+  color: var(--green) !important;
 }
 .down {
-  color: var(--red);
+  color: var(--red) !important;
 }
