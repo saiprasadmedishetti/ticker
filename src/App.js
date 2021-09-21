@@ -5,9 +5,12 @@ import Chart from "./components/Chart";
 
 const URL = "wss://stream.coinmarketcap.com/price/latest";
 const ticker = "BTC-USD";
+const API_URL =
+  "https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=60";
 function App() {
   const ws = useRef();
   const containerRef = useRef();
+  const [history, setHistory] = useState([]);
   const [price, setPrice] = useState();
   const [direction, setDirection] = useState("");
   // const [ticker, setTicker] = useState("");
@@ -17,6 +20,14 @@ function App() {
     if (isDevice) {
       containerRef.current.style.height = window.innerHeight + "px";
     }
+  }, []);
+
+  useEffect(() => {
+    fetch(API_URL)
+      .then((resp) => resp.json())
+      .then((data) => {
+        setHistory(data.Data.Data);
+      });
   }, []);
 
   useEffect(() => {
@@ -69,9 +80,10 @@ function App() {
                 time: data.d.t,
                 close: data.d.cr.p,
                 pc24h: data.d.cr.p24h,
+                volume: data.d.cr.v,
               };
             });
-            document.title = ticker + " | " + data.d.cr.p;
+            document.title = ticker + " | " + Number(data.d.cr.p).toFixed(2);
           }
         };
       };
@@ -81,8 +93,9 @@ function App() {
       ws.current.onclose = () => {
         ws.current.send(
           JSON.stringify({
-            action: "SubRemove",
-            subs: ["24~CCCAGG~BTC~USD~m"],
+            method: "unsubscribe",
+            id: "price",
+            data: { cryptoIds: [1], index: "detail" },
           })
         );
       };
@@ -118,12 +131,20 @@ function App() {
           >
             {"$ " + Number(price.close).toFixed(2)}
           </h2>
+          <div className="label-row">
+            {price?.volume && (
+              <small className="badge">
+                Vol: {Number(price.volume).toFixed(2)}
+              </small>
+            )}
+          </div>
         </div>
       )}
       <Chart
         price={price}
         height={containerRef?.current?.clientHeight || window.innerHeight}
         width={containerRef?.current?.clientWidth || window.innerWidth}
+        history={history}
       />
     </main>
   );

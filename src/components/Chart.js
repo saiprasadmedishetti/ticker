@@ -1,17 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { createChart, CrosshairMode } from "lightweight-charts";
 
-let lineSeries;
-const API_URL =
-  "https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=40";
-function Chart({ price, height, width }) {
-  const [data, setData] = useState([]);
+let lineSeries, volumeSeries;
+
+const getTime = (time) =>
+  new Date(Number(time)).toLocaleDateString().split("/").reverse().join("-");
+
+function Chart({ price, height, width, history }) {
   const chartContainerRef = useRef();
   const chart = useRef();
   useEffect(() => {
-    fetch(API_URL)
-      .then((resp) => resp.json())
-      .then((data) => setData(data.Data.Data));
     chart.current = createChart(chartContainerRef.current, {
       width,
       height,
@@ -45,31 +43,52 @@ function Chart({ price, height, width }) {
       wickDownColor: "#838ca1",
       wickUpColor: "#838ca1",
     });
+    volumeSeries = chart.current.addHistogramSeries({
+      color: "#26a69a",
+      priceFormat: {
+        type: "volume",
+      },
+      priceScaleId: "",
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
+      },
+    });
     return () => {
       chart.current.remove();
       //
     };
   }, []);
   useEffect(() => {
-    lineSeries.setData(data);
+    lineSeries.setData(history);
+    const volumeHistory = history.map((item, i, arr) => {
+      //       upColor: "#4bffb5",
+      // downColor: "#ff4976",
+      return {
+        time: item.time,
+        value: item.volumeto,
+        color: arr[i + 1]?.volumeto < item.volumeto ? "#009688cc" : "#ff5252cc",
+      };
+    });
+    volumeSeries.setData(volumeHistory);
     chart.current.timeScale().fitContent();
-  }, [data]);
+  }, [history.length]);
   useEffect(() => {
     if (lineSeries && price) {
       // const { time, open, high, low, close } = price;
-      const { time, close } = price;
-      const last = data[data.length - 1];
-      const time_ = new Date(Number(time))
-        .toLocaleDateString()
-        .split("/")
-        .reverse()
-        .join("-");
+      const { time, close, volume } = price;
+      const last = history[history.length - 1];
+      const time_ = getTime(time);
       lineSeries.update({
         time: time_,
         open: last.open,
         high: Math.max(last.high, close),
         low: Math.min(last.low, close),
         close,
+      });
+      volumeSeries.update({
+        time: time_,
+        value: volume,
       });
     }
   }, [price, lineSeries]);

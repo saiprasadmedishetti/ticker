@@ -51,7 +51,7 @@ body {
 }
 
 .badge {
-  padding: 0.25rem;
+  padding: 0.25rem 0.5rem;
   font-weight: 700;
   border-radius: 1rem;
   background: #ffffff20;
@@ -61,4 +61,8 @@ body {
 }
 .down {
   color: var(--red) !important;
+}
+.label-row {
+  margin-top: 10px;
+  font-size: 14px;
 }
