@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/ticker/static/css/main.5c100139.chunk.css",
-    "main.js": "/ticker/static/js/main.4ba473d9.chunk.js",
-    "main.js.map": "/ticker/static/js/main.4ba473d9.chunk.js.map",
+    "main.css": "/ticker/static/css/main.cdac234d.chunk.css",
+    "main.js": "/ticker/static/js/main.b10be75c.chunk.js",
+    "main.js.map": "/ticker/static/js/main.b10be75c.chunk.js.map",
     "runtime-main.js": "/ticker/static/js/runtime-main.3411d31a.js",
     "runtime-main.js.map": "/ticker/static/js/runtime-main.3411d31a.js.map",
     "static/js/2.8c4c64c3.chunk.js": "/ticker/static/js/2.8c4c64c3.chunk.js",
@@ -10,13 +10,13 @@
     "static/js/3.cd35b226.chunk.js": "/ticker/static/js/3.cd35b226.chunk.js",
     "static/js/3.cd35b226.chunk.js.map": "/ticker/static/js/3.cd35b226.chunk.js.map",
     "index.html": "/ticker/index.html",
-    "static/css/main.5c100139.chunk.css.map": "/ticker/static/css/main.5c100139.chunk.css.map",
+    "static/css/main.cdac234d.chunk.css.map": "/ticker/static/css/main.cdac234d.chunk.css.map",
     "static/js/2.8c4c64c3.chunk.js.LICENSE.txt": "/ticker/static/js/2.8c4c64c3.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.3411d31a.js",
     "static/js/2.8c4c64c3.chunk.js",
-    "static/css/main.5c100139.chunk.css",
-    "static/js/main.4ba473d9.chunk.js"
+    "static/css/main.cdac234d.chunk.css",
+    "static/js/main.b10be75c.chunk.js"
   ]
 }
