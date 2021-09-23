@@ -115,9 +115,7 @@ function App() {
                 open: kline[1],
                 high: kline[3],
                 low: kline[4],
-                volume:
-                  Number(history[history?.length - 1].volumeto || 0) +
-                  Number(kline[5]),
+                volume: Number(prev.volume || 0) + Number(kline[5]),
                 amount: kline[6],
               };
             });
