@@ -47,12 +47,12 @@ body {
   margin-bottom: 0.5rem;
 }
 .price {
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .badge {
   padding: 0.25rem 0.5rem;
-  font-weight: 700;
+  font-weight: 500;
   border-radius: 1rem;
   background: #ffffff20;
 }
@@ -65,4 +65,9 @@ body {
 .label-row {
   margin-top: 10px;
   font-size: 14px;
+  .badge {
+    font-size: 0.9rem;
+    width: 100%;
+    display: inline-block;
+  }
 }

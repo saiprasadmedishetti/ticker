@@ -3,7 +3,8 @@ import Chart from "./components/Chart";
 
 // const URL = "wss://streamer.cryptocompare.com/v2?format=streamer";
 
-const URL = "wss://stream.coinmarketcap.com/price/latest";
+// const URL = "wss://stream.coinmarketcap.com/price/latest";
+const URL = "wss://perpetual.coinex.com/";
 const ticker = "BTC-USD";
 const API_URL =
   "https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=60";
@@ -26,7 +27,17 @@ function App() {
     fetch(API_URL)
       .then((resp) => resp.json())
       .then((data) => {
+        const last = data.Data.Data[data.Data.Data.length - 1];
         setHistory(data.Data.Data);
+        setPrice({
+          time: last.time * 1000,
+          close: last.close,
+          open: last.open,
+          high: last.high,
+          low: last.low,
+          volume: last.volumeto,
+          amount: "0",
+        });
       });
   }, []);
 
@@ -39,11 +50,18 @@ function App() {
         //     subs: ["24~CCCAGG~BTC~USD~m"],
         //   })
         // );
+        // ws.current.send(
+        //   JSON.stringify({
+        //     method: "subscribe",
+        //     id: "price",
+        //     data: { cryptoIds: [1], index: "detail" },
+        //   })
+        // );
         ws.current.send(
           JSON.stringify({
-            method: "subscribe",
-            id: "price",
-            data: { cryptoIds: [1], index: "detail" },
+            id: 5,
+            method: "kline.subscribe",
+            params: ["BTCUSD", 60],
           })
         );
         ws.current.onmessage = (e) => {
@@ -69,21 +87,41 @@ function App() {
           // }
 
           const data = JSON.parse(e.data);
-          if (data) {
+          if (data && data.method === "kline.update") {
+            // setPrice((prev) => {
+            //   if (prev) {
+            //     prev.close < data.d.cr.p
+            //       ? setDirection("up")
+            //       : setDirection("down");
+            //   }
+            //   return {
+            //     time: data.d.t,
+            //     close: data.d.cr.p,
+            //     pc24h: data.d.cr.p24h,
+            //     volume: data.d.cr.v,
+            //   };
+            // });
+            const kline = data.params[0];
+
             setPrice((prev) => {
               if (prev) {
-                prev.close < data.d.cr.p
+                prev.close < kline[2]
                   ? setDirection("up")
                   : setDirection("down");
               }
               return {
-                time: data.d.t,
-                close: data.d.cr.p,
-                pc24h: data.d.cr.p24h,
-                volume: data.d.cr.v,
+                time: kline[0] * 1000,
+                close: kline[2],
+                open: kline[1],
+                high: kline[3],
+                low: kline[4],
+                volume:
+                  Number(history[history?.length - 1].volumeto || 0) +
+                  Number(kline[5]),
+                amount: kline[6],
               };
             });
-            document.title = ticker + " | " + Number(data.d.cr.p).toFixed(2);
+            document.title = ticker + " | " + Number(kline[2]).toFixed(2);
           }
         };
       };
@@ -93,14 +131,14 @@ function App() {
       ws.current.onclose = () => {
         ws.current.send(
           JSON.stringify({
-            method: "unsubscribe",
-            id: "price",
-            data: { cryptoIds: [1], index: "detail" },
+            id: 5,
+            method: "kline.unsubscribe",
+            params: ["BTCUSD", 60],
           })
         );
       };
     };
-  }, [ws]);
+  }, [ws, history]);
 
   return (
     <main className="container" ref={containerRef}>
@@ -134,7 +172,14 @@ function App() {
           <div className="label-row">
             {price?.volume && (
               <small className="badge">
-                Vol: {Number(price.volume).toFixed(2)}
+                Vol: {Number(price.volume).toFixed(0)}
+              </small>
+            )}
+          </div>
+          <div className="label-row">
+            {price?.amount && (
+              <small className="badge">
+                Amount: {Number(price.amount).toFixed(4)}
               </small>
             )}
           </div>
